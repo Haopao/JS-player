@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,   user-scalable=no">
+    <title>音乐播放器</title>
+    <link rel="stylesheet" href="css/css.css">
+</head>
+<body>
+    <div id="phone">
+        <div class="top"></div>
+        <div class="title">暖暖</div>
+        <div class="singer">梁静茹</div>
+        <div class="play rotate"><img src="images/love.jpg" alt=""></div>
+        <div class="lrc">
+            <div id="content"></div>
+        </div>
+        <canvas id="canvas" height="120"></canvas>
+        <audio src="music/梁静茹%20-%20暖暖%20(Live).mp3" id="myMusic" autoplay></audio>
+        <textarea name="" id="txt">
+            [00:00.65]暖暖 - 梁静茹
+            [00:02.01]词：李焯雄
+            [00:03.84]曲：人工卫星
+            [00:25.27]都可以随便的
+            [00:27.30]你说的我都愿意去
+            [00:30.08]小火车摆动的旋律
+            [00:34.53]都可以是真的
+            [00:36.51]你说的我都会相信
+            [00:39.34]因为我完全信任你
+            [00:44.06]细腻的喜欢
+            [00:46.37]毛毯般的厚重感
+            [00:48.57]晒过太阳熟悉的安全感
+            [00:53.35]分享热汤
+            [00:54.99]我们两支汤匙一个碗
+            [00:57.84]左心房暖暖的好饱满
+            [01:02.29]我想说其实你很好
+            [01:04.82]你自己却不知道
+            [01:07.66]真心的对我好
+            [01:09.93]不要求回报
+            [01:12.27]爱一个人希望他过更好
+            [01:16.91]打从心里暖暖的
+            [01:19.16]你比自己更重要
+            [01:39.18]都可以随便的
+            [01:41.15]你说的我都愿意去
+            [01:43.96]回忆里满足的旋律
+            [01:48.29]都可以是真的
+            [01:50.40]你说的我都会相信
+            [01:53.13]因为我完全信任你
+            [01:57.94]细腻的喜欢
+            [02:00.14]你手掌的厚实感
+            [02:02.57]什么困难都觉得有希望
+            [02:07.10]我哼着歌
+            [02:08.84]你自然的就接下一段
+            [02:11.60]我知道暖暖就在胸膛
+            [02:16.08]我想说其实你很好
+            [02:18.66]你自己却不知道
+            [02:21.46]真心的对我好
+            [02:23.81]不要求回报
+            [02:26.07]爱一个人希望他过更好
+            [02:30.77]打从心里暖暖的
+            [02:33.11]你比自己更重要
+            [02:39.16]我想说其实你很好
+            [02:41.71]你自己却不知道
+            [02:44.51]从来都很低调
+            [02:46.87]自信心不高
+            [02:49.14]爱一个人希望他过更好
+            [02:53.72]打从心里暖暖的
+            [02:56.21]你比自己更重要
+            [03:01.14]你不知道
+            [03:03.10]真心的对我好
+            [03:05.35]不要求回报
+            [03:07.62]爱一个人希望他过更好
+            [03:12.29]打从心里暖暖的
+            [03:16.97]你比自己更重要
+            [03:21.49]我也希望变更好
+            [03:44.68]哒哒哒哒哒哒哒
+        </textarea>
+        <script>
+            var oPlay = document.getElementsByClassName("play")[0];
+            var myMusic = document.getElementById("myMusic");
+            var flag = false;
+            //播放暂停
+            oPlay.onclick = function () {
+                if (flag) {
+                    myMusic.play();
+                    this.className="play rotate";
+                } else {
+                    myMusic.pause();
+                    this.className="play";
+                }
+                flag = !flag;
+            };
+
+
+            //歌词同步
+            var text = document.getElementById("txt").value;
+            var oCon = document.getElementById("content");
+            var lrc = text.split("[");
+            for (var i=0,len=lrc.length;i<len;i++){
+                var lrcs = lrc[i].split("]");
+                var time = lrcs[0].split(".");
+                var times = time[0].split(":");
+                var t = parseInt(times[0])*60 + parseInt(times[1]);
+                if (lrcs[1]){
+                    oCon.innerHTML += '<p id="' + t + '">' + lrcs[1] + '</p>';
+                }
+            }
+
+            //监听歌曲播放的进度
+            var aP = oCon.getElementsByTagName("p");
+            var n=0;
+            myMusic.addEventListener("timeupdate",function () {
+                var cur = parseInt(this.currentTime);
+                if ( document.getElementById(cur)){
+                    for (var i=0,lens=aP.length;i<lens;i++){
+                        aP[i].style.cssText = "color:#ccc;font-size:12px;"
+                    }
+                    document.getElementById(cur).style.cssText="color:#FFB5C5;font-size:18px;font-weight:500";
+                    if (aP[5+n].id == cur){
+                        oCon.style.top = -n*20 +"px";
+                        n++;
+                    }
+                }
+            });
+
+            //canvas绘制音频
+            var can = document.getElementById("canvas");
+            var ctx = can.getContext("2d");          //设置2D绘图环境
+            //绘制矩形
+//            ctx.rect(50,0,20,100);               //矩形路径
+            //设置渐变，从x1 y1渐变到x2 y2
+            var color = ctx.createLinearGradient(100,0,100,120);
+            color.addColorStop(0,"#f00");             //起始颜色
+            color.addColorStop(1,"#0f0");              //结束颜色
+            ctx.fillStyle = color;
+//            ctx.fillRect(50,0,20,100);                       //填充方法
+
+            //获取音乐播放的音频
+            window.AudioContext = window.AudioContext||window.webkitAudioContext||window.mozAudioContent;
+            var actx = new AudioContext();
+            //获取音乐数据源
+            var audioSrc = actx.createMediaElementSource(myMusic);
+            //创建一个分析节点
+            var analyser = actx.createAnalyser();
+            //把数据源和分析节点连接起来
+            audioSrc.connect(analyser);
+            //再把分析节点和目标点链接起来
+            analyser.connect(actx.destination);
+            //创建一个和音频频次等长的数组
+            var arr = new Uint8Array(analyser.frequencyBinCount);
+            var step = Math.round(arr.length/100);
+            //获取频次
+//            setInterval(function () {
+                function draw() {
+                    analyser.getByteFrequencyData(arr);
+                    ctx.clearRect(0,0,can.width,can.height);
+                    for (var i=0;i<100;i++){
+                        var v = arr[step*i]/2;
+                        ctx.fillRect(i*10,120,7,-v);
+                    }
+                    requestAnimationFrame(draw);
+                }
+
+//            },1000/60);
+            draw();
+
+        </script>
+    </div>
+</body>
+</html>
